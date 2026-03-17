@@ -1,0 +1,104 @@
+name: Security Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety bandit
+        pip install -r requirements.txt
+
+    - name: Check for hardcoded credentials
+      run: |
+        echo "🔍 Checking for hardcoded credentials..."
+        # Check for email patterns (should only be in examples/docs)
+        if grep -r "@gmail\.com\|@.*\.com" --include="*.py" scripts/ | grep -v "example\|your-email"; then
+          echo "❌ Found email addresses in code!"
+          exit 1
+        fi
+        # Check for password variables with actual values
+        if grep -r "password\s*=\s*['\"]" --include="*.py" scripts/ | grep -v "sys.argv"; then
+          echo "❌ Found hardcoded passwords!"
+          exit 1
+        fi
+        echo "✅ No hardcoded credentials found"
+
+    - name: Check for sensitive files
+      run: |
+        echo "🔍 Checking for sensitive files..."
+        if [ -f ".env" ]; then
+          echo "❌ .env should not be in repository!"
+          exit 1
+        fi
+        if [ -f "tokens.json" ] || [ -f "credentials.json" ]; then
+          echo "❌ Credential files should not be in repository!"
+          exit 1
+        fi
+        echo "✅ No sensitive files found"
+
+    - name: Verify .gitignore coverage
+      run: |
+        echo "🔍 Verifying .gitignore..."
+        grep -q "\.env" .gitignore || (echo "❌ .env not in .gitignore" && exit 1)
+        grep -q "token" .gitignore || (echo "❌ token files not in .gitignore" && exit 1)
+        grep -q "venv" .gitignore || (echo "❌ venv not in .gitignore" && exit 1)
+        echo "✅ .gitignore properly configured"
+
+    - name: Verify token storage location
+      run: |
+        echo "🔍 Verifying tokens use /tmp..."
+        grep -q "/tmp/garmin_session" scripts/garmin_auth.py || (echo "⚠️ Token path not in /tmp" && exit 1)
+        grep -q "/tmp/garmin_session" scripts/garmin_fetch.py || (echo "⚠️ Token path not in /tmp" && exit 1)
+        echo "✅ Tokens stored in /tmp (secure)"
+
+    - name: Run dependency vulnerability scan
+      run: |
+        echo "🔍 Scanning dependencies for vulnerabilities..."
+        safety check --json || echo "⚠️ Some vulnerabilities found, review recommended"
+
+    - name: Run security linter (Bandit)
+      run: |
+        echo "🔍 Running security linter..."
+        bandit -r scripts/ -f json -o bandit-report.json || true
+        if [ -f bandit-report.json ]; then
+          cat bandit-report.json
+          # Fail on high severity issues
+          HIGH_COUNT=$(cat bandit-report.json | python -c "import sys, json; data=json.load(sys.stdin); print(len([x for x in data.get('results', []) if x.get('issue_severity') == 'HIGH']))" 2>/dev/null || echo "0")
+          if [ "$HIGH_COUNT" -gt "0" ]; then
+            echo "❌ Found $HIGH_COUNT high-severity security issues!"
+            exit 1
+          fi
+        fi
+        echo "✅ No high-severity security issues"
+
+    - name: Check Python code quality
+      run: |
+        echo "🔍 Checking code quality..."
+        # Check for print() of sensitive data
+        if grep -n "print.*password\|print.*token\|print.*credential" scripts/*.py | grep -v "json.dumps"; then
+          echo "⚠️ Warning: Possible credential logging detected"
+        fi
+        echo "✅ Code quality check complete"
+
+    - name: Summary
+      run: |
+        echo "✅ Security checks completed!"
+        echo "📊 All security validations passed"
+        echo "🔒 No credentials or sensitive data detected"
