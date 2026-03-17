@@ -3,38 +3,124 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Garmin Connect](https://img.shields.io/badge/Garmin-Connect-blue)](https://connect.garmin.com/)
+[![Security Check](https://github.com/alyusva/garmin-connect/workflows/Security%20Check/badge.svg)](https://github.com/alyusva/garmin-connect/actions)
 
-A Claude Code skill that connects to Garmin Connect to fetch and analyze fitness, training, and recovery data. Supports activities, sleep, HRV, VO2max, race predictions, training readiness, and more.
+**Conecta Claude con tu cuenta de Garmin Connect** para analizar tus entrenamientos, recuperación y métricas de salud usando inteligencia artificial.
 
-> 🎯 **Use Case**: Ask Claude about your Garmin data in natural language: "How was my last run?", "Show my sleep stats from yesterday", "What are my race predictions?"
+## 🎯 ¿Qué puede hacer esta skill?
 
-## ✨ Features
+Pregúntale a Claude sobre tu actividad física en **lenguaje natural**:
 
-### 🏋️ Training Data
-- **Activities**: Recent workouts with pace, HR, distance, elevation
-- **Activity Details**: Full metrics including splits, lap data, HR zones
-- **Training Status**: Productive, peaking, recovery, detraining
-- **Training Load**: Balance analysis for easy/hard sessions
-- **Race Predictions**: 5K, 10K, half marathon, marathon estimates
+### 🏃 Entrenamientos
+- *"¿Cómo fue mi carrera de esta mañana?"* → Analiza ritmo, frecuencia cardíaca, cadencia, desnivel
+- *"Muéstrame mis últimos 10 entrenamientos"* → Listado con resumen de cada actividad
+- *"¿Estoy mejorando mi ritmo?"* → Compara progreso entre sesiones
+- *"¿Cuánto he corrido esta semana?"* → Suma distancias y duración
 
-### 😴 Recovery Metrics
-- **Sleep Analysis**: Duration, deep/light/REM phases, sleep score
-- **HRV Status**: Balanced, low, unbalanced with weekly trends
-- **Body Battery**: Morning charge level and drain patterns
-- **Training Readiness**: Readiness score with contributing factors
-- **Stress Levels**: All-day stress data and trends
+### 😴 Recuperación
+- *"¿Cómo dormí anoche?"* → Análisis de fases de sueño (profundo/ligero/REM)
+- *"¿Estoy bien recuperado para entrenar hoy?"* → Training Readiness + HRV + Body Battery
+- *"Muéstrame mi Body Battery de la semana"* → Gráfico de carga/descarga de energía
+- *"¿Mi HRV está normal?"* → Estado (equilibrado/bajo/desequilibrado) y tendencia
 
-### 📊 Performance Metrics
-- **VO2max**: Current estimate and historical trends
-- **Fitness Age**: Age-adjusted fitness level
-- **Personal Records**: All-time bests across distances
-- **Endurance Score**: Long-term endurance capacity
-- **Hill Score**: Hill running/climbing performance
+### 📊 Rendimiento
+- *"¿Cuál es mi VO2max actual?"* → Estimación y evolución histórica
+- *"¿Qué marca puedo hacer en un 10K?"* → Predicciones de carrera (5K, 10K, media, maratón)
+- *"¿Cuál es mi edad de fitness?"* → Fitness Age comparado con edad real
+- *"Muéstrame mis récords personales"* → Mejores marcas por distancia
 
-### 🎯 Goals & Planning
-- **Active Goals**: Step goals, weight goals, activity goals
-- **Training Plans**: Current active training programs
-- **Saved Workouts**: Custom workout library
+### 🎯 Planificación
+- *"¿Qué objetivos tengo activos?"* → Objetivos de pasos, peso, actividades
+- *"¿Tengo algún plan de entrenamiento?"* → Planes activos y progreso
+- *"Muéstrame mis entrenamientos guardados"* → Biblioteca de workouts
+
+### 📈 Tendencias
+- *"¿Estoy entrenando demasiado?"* → Training Status (productivo/recuperación/sobreentrenamiento)
+- *"¿Mi estrés está alto esta semana?"* → Niveles de estrés diarios
+- *"Compara mi actividad del último mes"* → Volumen, intensidad, progreso
+
+## 💬 Ejemplos de conversación real
+
+```
+👤 Usuario: "¿Cómo fue mi última carrera?"
+
+🤖 Claude: [Usa garmin-connect skill]
+Tu última carrera fue ayer:
+• 10.2 km en 52:14 (5:07 min/km)
+• FC media: 152 bpm (máx: 171)
+• Cadencia: 174 spm
+• Desnivel positivo: 87m
+• Training Effect aeróbico: 3.2 (Mantenimiento)
+
+✨ Análisis: Ritmo consistente, mantuviste 5:05-5:10 min/km
+todo el recorrido. FC controlada en zona 2-3. ¡Buen entreno base!
+
+---
+
+👤 Usuario: "¿Debería entrenar hoy o descansar?"
+
+🤖 Claude: [Consulta Training Readiness, HRV, Body Battery, Sleep]
+📊 Training Readiness: 68/100 (Moderado)
+💚 HRV: Equilibrado (54ms - dentro de tu rango)
+🔋 Body Battery: 73/100 (Cargado)
+😴 Sueño: 7h 23min - Score: 78/100
+
+✅ Recomendación: Estás listo para entrenar, pero evita
+sesiones muy intensas. Tu Body Battery está bien pero tu HRV
+sugiere que todavía estás recuperando del entreno de ayer.
+Ideal para un rodaje suave o descanso activo.
+```
+
+## ✨ Datos disponibles
+
+### 🏋️ Actividades y entrenamientos
+| Métrica | Qué obtienes |
+|---------|--------------|
+| **Actividades recientes** | Últimas 10/20/50 carreras, bicis, nados con métricas clave |
+| **Detalles de actividad** | Splits por km, zonas FC, elevación, cadencia, potencia |
+| **Ritmo y velocidad** | Min/km promedio, máximo, por tramos, negative splits |
+| **Frecuencia cardíaca** | Promedio, máxima, tiempo en zonas, cardiac drift |
+| **Training Effect** | Impacto aeróbico y anaeróbico (1-5 escala) |
+| **Clima** | Condiciones durante el entrenamiento |
+
+### 😴 Recuperación y salud
+| Métrica | Qué obtienes |
+|---------|--------------|
+| **Sueño** | Fases (profundo/ligero/REM), duración, score de calidad |
+| **HRV** | Variabilidad cardíaca, estado (equilibrado/bajo), tendencia semanal |
+| **Body Battery** | Nivel de energía (0-100), carga/descarga durante el día |
+| **Training Readiness** | Score de preparación (0-100) con factores contribuyentes |
+| **Estrés** | Nivel de estrés (0-100) durante todo el día |
+| **Recuperación FC** | Tiempo de recuperación post-ejercicio |
+
+### 📊 Métricas de rendimiento
+| Métrica | Qué obtienes |
+|---------|--------------|
+| **VO2max** | Capacidad aeróbica estimada (ml/kg/min) con tendencia |
+| **Edad de fitness** | Tu edad fisiológica vs edad real |
+| **Predicciones de carrera** | Tiempos estimados para 5K, 10K, media maratón, maratón |
+| **Umbral de lactato** | Ritmo y FC en umbral anaeróbico |
+| **FTP ciclismo** | Functional Threshold Power para ciclistas |
+| **Récords personales** | Mejores tiempos en todas las distancias |
+| **Endurance Score** | Capacidad de resistencia de larga duración |
+| **Hill Score** | Rendimiento en subidas y desnivel |
+
+### 🎯 Planificación y objetivos
+| Métrica | Qué obtienes |
+|---------|--------------|
+| **Training Status** | Estado actual: productivo/peaking/recovery/detraining/overreaching |
+| **Training Load** | Carga aeróbica vs anaeróbica, balance de entrenamiento |
+| **Objetivos activos** | Pasos diarios, peso objetivo, minutos de intensidad |
+| **Planes de entrenamiento** | Programas activos con progreso |
+| **Entrenamientos guardados** | Biblioteca de workouts personalizados |
+
+### 📱 Datos adicionales
+- **Dispositivos conectados**: Relojes, básculas, sensores
+- **Composición corporal**: Peso, IMC, % grasa, masa muscular
+- **Pasos y actividad diaria**: Pasos, distancia, calorías
+- **Minutos de intensidad**: Tiempo en zonas moderada/vigorosa
+- **SpO2**: Saturación de oxígeno
+- **Respiración**: Frecuencia respiratoria
 
 ## 🚀 Installation
 
