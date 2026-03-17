@@ -1,0 +1,81 @@
+# ============================================
+# CREDENCIALES Y DATOS SENSIBLES - NUNCA SUBIR
+# ============================================
+.env
+.env.local
+.env.production
+*.pem
+*.key
+*_credentials.json
+*token*.json
+
+# Sesiones temporales de Garmin
+/tmp/
+tokens/
+session/
+
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv
+
+# ============================================
+# LOGS Y TEMPORAL
+# ============================================
+*.log
+.DS_Store
+*.tmp
+*.temp
+.cache
+
+# ============================================
+# IDE
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ============================================
+# TESTING
+# ============================================
+.coverage
+.pytest_cache/
+.tox/
+htmlcov/
+
+# ============================================
+# OTROS
+# ============================================
+*.bak
+*.orig
